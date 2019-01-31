@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+        <title>Email Manager</title>
+        <style>
+            html,
+            body {
+                width: 100%;
+                height: 100%;
+                padding: 0;
+                margin: 0;
+            }
+
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 16px;
+                line-height: 1.2;
+            }
+
+            .navigation {
+                display: table;
+                margin: 0 auto;
+            }
+
+            .navigation > div {
+                display: table-cell;
+                vertical-align: middle;
+                text-align: center;
+                padding: 20px;
+            }
+
+            .navigation span {
+                cursor: pointer;
+                color: #439fe0;
+            }
+
+            .navigation span.active {
+                font-weight: bold;
+                cursor: default;
+            }
+
+            .content {
+                display: none;
+                padding: 20px;
+            }
+
+            .text-fields {
+                display: table;
+                width: 100%;
+                padding: 0;
+            }
+
+            .text-fields > div {
+                display: table-cell;
+                width: 50%;
+                vertical-align: top;
+            }
+
+            .text-fields > div:first-child {
+                padding-right: 10px;
+            }
+
+            .text-fields > div:last-child {
+                padding-left: 10px;
+            }
+
+            #view-content {
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            .content.active {
+                display: block;
+            }
+
+            .content h2 {
+                font-size: 18px;
+                font-weight: bold;
+                padding: 0 0 8px 0;
+                margin: 0;
+            }
+
+            .content textarea {
+                box-sizing: border-box;
+                width: 100%;
+                border: 1px solid #666;
+                margin: 0;
+            }
+
+            .convert-button-container {
+                text-align: center;
+                padding: 20px 0 40px 0;
+            }
+
+            .convert-button-container input {
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 16px;
+                padding: 4px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="navigation">
+                <div><span id="html-button" class="active">HTML</span></div>
+                <div><span id="view-button">View</span></div>
+            </div>
+
+            <div id="html-content" class="content active">
+                <div class="text-fields">
+                    <div>
+                        <h2>Content Code</h2>
+                        <textarea rows="40" id="html-code"></textarea>
+                    </div>
+
+                    <div>
+                        <h2>Email Code</h2>
+                        <textarea rows="40" id="formatted-code"></textarea>
+                    </div>
+                </div>
+
+                <div class="convert-button-container">
+                    <input id="convert-button" type="button" value="Convert Code">
+                </div>
+            </div>
+
+
+
+            <div id="view-content" class="content"></div>
+        </div>
+
+        <script>
+            (function()
+            {
+                const styles = {
+                    container: [
+                        "background-image: linear-gradient(to bottom, #24262d, #24262d), linear-gradient(to bottom, #24262d, #24262d)",
+                        "padding: 10px"
+                    ].join(";"),
+
+                    content: [
+                        "background-color: #fff",
+                        "padding: 0 4% 40px 4%"
+                    ].join(";"),
+
+                    h2: [
+                        "font-family: Arial, Helvetica, sans-serif",
+                        "font-weight: bold",
+                        "font-size: 23px",
+                        "line-height: 1",
+                        "letter-spacing: -0.9px",
+                        "text-transform: uppercase",
+                        "color: #1e1e1e",
+                        "padding-top: 57px"
+                    ].join(";"),
+
+                    "h2-icon": [
+                        //"display: block",
+                        //"width: 28px",
+                        //"height: 28px",
+                        //"background-size: contain",
+                        //"background-position: 50% 50%",
+                        //"background-repeat: no-repeat",
+                        "padding-bottom: 10px"
+                    ].join(";"),
+
+                    "icon-rocket": [
+                        "background-image: url(https://404fest.mercdev.com/carrotrush/email-images/icons/rocket.png)"
+                    ].join(";"),
+
+                    "icon-news": [
+                        "background-image: url(https://404fest.mercdev.com/carrotrush/email-images/icons/news.png)"
+                    ].join(";"),
+
+                    "icon-fire": [
+                        "background-image: url(https://404fest.mercdev.com/carrotrush/email-images/icons/fire.png)"
+                    ].join(";"),
+
+                    "icon-ufo": [
+                        "background-image: url(https://404fest.mercdev.com/carrotrush/email-images/icons/ufo.png)"
+                    ].join(";"),
+
+                    h3: [
+                        "font-family: Arial, Helvetica, sans-serif",
+                        "font-weight: bold",
+                        "font-size: 18px",
+                        "line-height: 1",
+                        "letter-spacing: -0.7px",
+                        "color: #1e1e1e",
+                        "padding-top: 26px"
+                    ].join(";"),
+
+                    p: [
+                        "font-size: 16px",
+                        "line-height: 1.5",
+                        "color: #1e1e1e",
+                        "padding-top: 14px"
+                    ].join(";"),
+
+                    ul: [
+                        "font-size: 16px",
+                        "line-height: 1.5",
+                        "color: #1e1e1e",
+                        "padding: 0 0 0 24px",
+                        "margin: 0"
+                    ].join(";"),
+
+                    li: [
+                        "padding: 14px 0 0 0",
+                        "margin: 0"
+                    ].join(";"),
+
+                    a: [
+                        "color: #ed4159"
+                    ].join(";"),
+
+                    img: [
+                        "width: 100%",
+                        "max-width: 477px"
+                    ].join(";")
+                };
+
+                const htmlButtonElement = document.getElementById("html-button");
+                htmlButtonElement.addEventListener("click", handleHtmlButtonClick, false);
+
+                const viewButtonElement = document.getElementById("view-button");
+                viewButtonElement.addEventListener("click", handleViewButtonClick, false);
+
+                const htmlContentElement = document.getElementById("html-content");
+                const viewContentElement = document.getElementById("view-content");
+
+                const htmlCodeElement = document.getElementById("html-code");
+                const formattedHtmlCodeElement = document.getElementById("formatted-code");
+
+                const convertButtonElement = document.getElementById("convert-button");
+                convertButtonElement.addEventListener("click", handleConvertButtonClick, false);
+
+                function handleConvertButtonClick(event)
+                {
+                    let html = htmlCodeElement.value;
+
+
+
+
+
+                    html = html.replace(/((<a.+?)>)/mg, '$2 style="' + styles.a + '">');
+                    html = html.replace(/((<img.+?)>)/mg, '<div style="text-align: center; padding-top: 19px;">$2 style="' + styles.img + '"></div>');
+                    html = html.replace(/((<ul)>)/mg, '$2 style="' + styles.ul + '">');
+                    html = html.replace(/((<li)>)/mg, '$2 style="' + styles.li + '">');
+
+                    html = html.replace(/<h2 class="icon-rocket">/mg, '<h2><div style="' + styles["h2-icon"] +  '"><img src="https://404fest.mercdev.com/carrotrush/email-images/icons/rocket.png" width="28" height="28"></div>');
+                    html = html.replace(/<h2 class="icon-news">/mg, '<h2><div style="' + styles["h2-icon"] +  '"><img src="https://404fest.mercdev.com/carrotrush/email-images/icons/news.png" width="28" height="28"></div>');
+                    html = html.replace(/<h2 class="icon-fire">/mg, '<h2><div style="' + styles["h2-icon"] +  '"><img src="https://404fest.mercdev.com/carrotrush/email-images/icons/fire.png" width="28" height="28"></div>');
+                    html = html.replace(/<h2 class="icon-ufo">/mg, '<h2><div style="' + styles["h2-icon"] +  '"><img src="https://404fest.mercdev.com/carrotrush/email-images/icons/ufo.png" width="28" height="28"></div>');
+
+                    html = html.replace(/<h2>/mg, '<div style="' + styles.h2 + '">');
+                    html = html.replace(/<h3>/mg, '<div style="' + styles.h3 + '">');
+
+                    html = html.replace(/<p>/mg, '<div style="' + styles.p + '">');
+
+                    html = html.replace(/<\/(h2|h3|p)>/mg, "</div>");
+
+                    html =
+                        '<div style="' + styles.container + '">' +
+                            '<div style="overflow: hidden; max-width: 572px; margin: 0 auto; border-radius: 8px;">' +
+                                '<div style="display: table; width: 100%; height: 280px; background-image: url(https://404fest.mercdev.com/carrotrush/email-images/top-bottom-background.png); background-size: cover; background-position: 50% 50%; background-repeat: repeat; background-color: #ff435d;"><div style="display: table-cell; vertical-align: middle; text-align: center; font-weight: bold; font-size: 48px; line-height: 1.46; color: #fff;">Дайджест<br>новостей</div></div>' +
+                                '<div style="' + styles.content + '">' +
+                                    html +
+                                '</div>' +
+                                '<div style="display: table; width: 100%; height: 280px; background-image: url(https://404fest.mercdev.com/carrotrush/email-images/top-bottom-background.png); background-size: cover; background-position: 50% 50%; background-repeat: repeat; background-color: #ff435d;"><div style="display: table-cell; vertical-align: middle; text-align: center;"><img src="https://404fest.mercdev.com/carrotrush/email-images/logo.png" style="width: 80%; max-width: 340px; transform: translate(-8%, 0);"></div></div>' +
+                            '</div>' +
+                        '</div>';
+
+                    formattedHtmlCodeElement.value = html;
+                    viewContentElement.innerHTML = html;
+                }
+
+                function handleHtmlButtonClick(event)
+                {
+                    if (htmlButtonElement.classList.contains("active"))
+                    {
+                        return;
+                    }
+
+                    viewButtonElement.classList.remove("active");
+                    viewContentElement.classList.remove("active");
+
+                    htmlButtonElement.classList.add("active");
+                    htmlContentElement.classList.add("active");
+                }
+
+                function handleViewButtonClick(event)
+                {
+                    if (viewButtonElement.classList.contains("active"))
+                    {
+                        return;
+                    }
+
+                    htmlButtonElement.classList.remove("active");
+                    htmlContentElement.classList.remove("active");
+
+                    viewButtonElement.classList.add("active");
+                    viewContentElement.classList.add("active");
+                }
+            })();
+        </script>
+    </body>
+</html>
